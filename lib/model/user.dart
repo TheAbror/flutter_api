@@ -20,4 +20,26 @@ class User {
     required this.picture,
     required this.country,
   });
+  factory User.fromMap(Map<String, dynamic> e) {
+    final name = UserName(
+      title: e['name']['title'],
+      first: e['name']['first'],
+      last: e['name']['last'],
+    );
+    final picture = Picture(picture: e['picture']['thumbnail']);
+    final country = Country(country: e['location']['country']);
+    return User(
+      email: e['email'],
+      phone: e['phone'],
+      cell: e['cell'],
+      gender: e['gender'],
+      name: name,
+      country: country,
+      picture: picture,
+    );
+  }
+
+  String get fullName {
+    return '${name.title}.${name.first} ${name.last}';
+  }
 }

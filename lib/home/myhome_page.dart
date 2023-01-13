@@ -1,14 +1,7 @@
-import 'dart:convert';
-import 'dart:math';
-import 'dart:ui';
 import 'package:flutter_rest_api/model/user.dart';
-import 'package:flutter_rest_api/model/users_picture.dart';
-import 'package:http/http.dart' as http;
 
 import 'package:flutter/material.dart';
-
-import 'model/users_country.dart';
-import 'model/users_name.dart';
+import 'package:flutter_rest_api/services/user_api.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
@@ -20,13 +13,14 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  List<User> users = [];
+
   @override
   void initState() {
     super.initState();
     getUsers();
   }
 
-  List<User> users = [];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -59,14 +53,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Row(
-                                children: [
-                                  Text("${user.name.title}."),
-                                  Text(user.name.first),
-                                  const Text(' '),
-                                  Text(user.name.last),
-                                ],
-                              ),
+                              Text(user.fullName),
                               Text(
                                 email,
                                 overflow: TextOverflow.ellipsis,
@@ -104,33 +91,9 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<void> getUsers() async {
-    const url = 'https://randomuser.me/api/?results=95';
-    final uri = Uri.parse(url);
-    final response = await http.get(uri);
-    final body = response.body;
-    final json = jsonDecode(body);
-    final results = json['results'] as List<dynamic>;
-    final transformed = results.map(
-      (e) {
-        final name = UserName(
-          title: e['name']['title'],
-          first: e['name']['first'],
-          last: e['name']['last'],
-        );
-        final picture = Picture(picture: e['picture']['thumbnail']);
-        final country = Country(country: e['location']['country']);
-        return User(
-            email: e['email'],
-            phone: e['phone'],
-            cell: e['cell'],
-            gender: e['gender'],
-            name: name,
-            country: country,
-            picture: picture);
-      },
-    ).toList();
+    final response = await UserApi.fetcgUsers();
     setState(() {
-      users = transformed;
+      users = response;
     });
   }
 }
