@@ -32,12 +32,6 @@ class _MyHomePageState extends State<MyHomePage> {
         itemBuilder: ((context, index) {
           final user = users[index];
           final email = user.email;
-          // final image = user['picture']['thumbnail'];
-          // final name = user['name']['first'];
-          // final familyName = user['name']['last'];
-          // final location = user['location']['country'];
-          // final latitude = user['location']['coordinates']['latitude'];
-          // final longitude = user['location']['coordinates']['longitude'];
           return GestureDetector(
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -60,12 +54,9 @@ class _MyHomePageState extends State<MyHomePage> {
                               Row(
                                 children: [
                                   Text("${user.name.title}."),
-
                                   Text(user.name.first),
                                   const Text(' '),
                                   Text(user.name.last),
-
-                                  // Spacer(),
                                 ],
                               ),
                               Text(
