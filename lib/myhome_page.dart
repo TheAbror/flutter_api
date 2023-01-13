@@ -75,8 +75,10 @@ class _MyHomePageState extends State<MyHomePage> {
                           ),
                         ),
                         Expanded(
+                          flex: 2,
                           child: Text(
                             user.country.country,
+                            textAlign: TextAlign.end,
                             overflow: TextOverflow.ellipsis,
                           ),
                         ),
