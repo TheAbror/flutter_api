@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter_rest_api/model/user.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:flutter/material.dart';
@@ -19,7 +20,7 @@ class _MyHomePageState extends State<MyHomePage> {
     getUsers();
   }
 
-  List<dynamic> users = [];
+  List<User> users = [];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -30,71 +31,69 @@ class _MyHomePageState extends State<MyHomePage> {
         itemCount: users.length,
         itemBuilder: ((context, index) {
           final user = users[index];
-          final email = user['email'];
-          final image = user['picture']['thumbnail'];
-          final name = user['name']['first'];
-          final familyName = user['name']['last'];
-          final location = user['location']['country'];
-          final latitude = user['location']['coordinates']['latitude'];
-          final longitude = user['location']['coordinates']['longitude'];
+          final email = user.email;
+          // final image = user['picture']['thumbnail'];
+          // final name = user['name']['first'];
+          // final familyName = user['name']['last'];
+          // final location = user['location']['country'];
+          // final latitude = user['location']['coordinates']['latitude'];
+          // final longitude = user['location']['coordinates']['longitude'];
           return GestureDetector(
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               height: 100,
-              child: Column(
-                children: [
-                  Row(
-                    children: [
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(100),
-                        child: Image.network(image),
-                      ),
-                      const SizedBox(width: 20),
-                      Expanded(
-                        flex: 5,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              children: [
-                                Text(name),
-                                const Text(' '),
-                                Text(
-                                  familyName,
-                                ),
-                                // Spacer(),
-                              ],
-                            ),
-                            Text(
-                              email,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'Latitude:' + latitude,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                                Text(
-                                  'Longitude:' + longitude,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ],
-                            ),
-                          ],
+              child: Center(
+                child: Column(
+                  children: [
+                    Row(
+                      children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(100),
+                          child: Image.network(user.picture.picture),
                         ),
-                      ),
-                      Expanded(
-                        child: Text(
-                          location,
-                          overflow: TextOverflow.ellipsis,
+                        const SizedBox(width: 20),
+                        Expanded(
+                          flex: 4,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Text("${user.name.title}."),
+
+                                  Text(user.name.first),
+                                  const Text(' '),
+                                  Text(user.name.last),
+
+                                  // Spacer(),
+                                ],
+                              ),
+                              Text(
+                                email,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              Text(
+                                user.gender,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              Text(
+                                '+1 ${user.cell}',
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
-                  const Divider(),
-                ],
+                        Expanded(
+                          child: Text(
+                            user.country.country,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const Divider(),
+                  ],
+                ),
               ),
             ),
           );
@@ -109,8 +108,29 @@ class _MyHomePageState extends State<MyHomePage> {
     final response = await http.get(uri);
     final body = response.body;
     final json = jsonDecode(body);
+    final results = json['results'] as List<dynamic>;
+    final transformed = results.map(
+      (e) {
+        final name = UserName(
+          title: e['name']['title'],
+          first: e['name']['first'],
+          last: e['name']['last'],
+        );
+        final picture = Picture(picture: e['picture']['thumbnail']);
+        final country = Country(country: e['location']['country']);
+        return User(
+          email: e['email'],
+          phone: e['phone'],
+          cell: e['cell'],
+          gender: e['gender'],
+          name: name,
+          picture: picture,
+          country: country,
+        );
+      },
+    ).toList();
     setState(() {
-      users = json['results'];
+      users = transformed;
     });
   }
 }
